@@ -1,0 +1,115 @@
+#!/bin/bash
+
+__default() {
+    case "$1" in
+        SED) echo "sed" ;;
+        GIT) echo "git" ;;
+        DIFF) echo "diff -u" ;;
+        YQ) echo "yq" ;;
+        HELM) echo "helm" ;;
+        KUBECTL) echo "kubectl" ;;
+        KUSTOMIZE_OPT) echo "" ;;
+        *) echo "UNKNWON__DEFAULT" ;;
+    esac
+}
+
+__usage() {
+    cat - <<EOS > /dev/stderr
+Common environment variables:
+  SED
+    sed command.
+    default: $(__default SED)
+
+  GIT
+    git command.
+    default: $(__default GIT)
+
+  DIFF
+    diff command.
+    default: $(__default DIFF)
+
+  YQ
+    yq command.
+    https://github.com/mikefarah/yq
+    default: $(__default YQ)
+
+  HELM
+    helm command.
+    default: $(__default HELM)
+
+  KUBECTL
+    kubectl command.
+    default: $(__default KUBECTL)
+
+  KUSTOMIZE_OPT
+    Options for kubectl kustomize.
+    default: $(__default KUSTOMIZE_OPT)
+EOS
+}
+
+short_selfname() {
+    echo "${0##*/}"
+}
+
+sed_cmd() {
+    ${SED:-$(__default SED)} "$@"
+}
+
+git_cmd() {
+    ${GIT:-$(__default GIT)} "$@"
+}
+
+diff_cmd() {
+    ${DIFF:-$(__default DIFF)} "$@"
+}
+
+yq_cmd() {
+    ${YQ:-$(__default YQ)} "$@"
+}
+
+helm_path() {
+    echo "${HELM:-$(__default HELM)}"
+}
+
+helm_cmd() {
+    $(helm_path) "$@"
+}
+
+kubectl_cmd() {
+    ${KUBECTL:-$(__default KUBECTL)} "$@"
+}
+
+sort_yaml() {
+    yq_cmd --prettyPrint 'sort_keys(..)'
+}
+
+helm_sorted() {
+    helm_cmd template "$@" | sort_yaml
+}
+
+kustomize_opt() {
+    echo "${KUSTOMIZE_OPT:-$(__default KUSTOMIZE_OPT)}"
+}
+
+kustomize_sorted() {
+    kubectl_cmd kustomize $(kustomize_opt) "$@" | sort_yaml
+}
+
+helm_build_prepare() {
+    target="$1"
+    helm_cmd dependency list --max-col-width 200 "$target" |\
+        grep -v '^$' |\
+        awk 'NR > 1 {print $1,$3}' |\
+        while read line ; do
+            name="$(echo $line | cut -d ' ' -f 1)"
+            repo="$(echo $line | cut -d ' ' -f 2)"
+            helm_cmd repo add "$name" "$repo"
+        done
+    helm_cmd dependency build "$target"
+}
+
+helm_build() {
+    target="$1"
+    helm_build_prepare "$target" > /dev/stderr
+    helm_sorted "$@"
+}
