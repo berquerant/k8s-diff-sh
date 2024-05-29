@@ -8,12 +8,12 @@ if [ $# -lt 2 ] ; then
     name="$(short_selfname)"
     cat - <<EOS > /dev/stderr
 diff by object
-${name} LEFT RIGHT [ID_ONLY]
+${name} LEFT RIGHT
 
 e.g.
 ${name} left.yml right.yml
-${name} left.yml right.yml 1 # object id diff only
-${name} default right.yml 1 # dump object ids of right.yml
+OBJDIFF_ID=1 ${name} left.yml right.yml # object id diff only
+OBJDIFF_ID=1 ${name} default right.yml # dump object ids of right.yml
 OBJDIFF='diff' ${name} left.yml right.yml # OBJDIFF overrides DIFF
 
 EOS
@@ -23,7 +23,7 @@ fi
 
 left="$1"
 right="$2"
-objid_only="$3"
+objid_only="$OBJDIFF_ID"
 
 object2id() {
     yq_cmd '(.apiVersion) + "^" + (.kind) + "^" + (.metadata.namespace) + "^" + (.metadata.name)' -r | grep -v '^-'
