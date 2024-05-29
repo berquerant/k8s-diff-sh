@@ -15,8 +15,10 @@ DIFF_ID=1 ${name} left.yml right.yml # object id diff only
 DIFF_ID=1 ${name} default right.yml # dump object ids of right.yml
 CONTEXT=5 ${name} left.yml right.yml # diff context lines
 
+Requires:
+- Python 3.12.2
+- https://github.com/yaml/pyyaml 6.0.1
 EOS
-    __usage
     exit 1
 fi
 

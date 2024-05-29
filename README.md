@@ -176,41 +176,15 @@ Common environment variables:
 ```
 ❯ ./object.sh
 diff by object
-object.sh LEFT RIGHT [ID_ONLY]
+object.sh LEFT RIGHT
 
 e.g.
 object.sh left.yml right.yml
-object.sh left.yml right.yml 1 # object id diff only
-object.sh default right.yml 1 # dump object ids of right.yml
-OBJDIFF='diff' object.sh left.yml right.yml # OBJDIFF overrides DIFF
+DIFF_ID=1 object.sh left.yml right.yml # object id diff only
+DIFF_ID=1 object.sh default right.yml # dump object ids of right.yml
+CONTEXT=5 object.sh left.yml right.yml # diff context lines
 
-Common environment variables:
-  SED
-    sed command.
-    default: sed
-
-  GIT
-    git command.
-    default: git
-
-  DIFF
-    diff command.
-    default: diff -u
-
-  YQ
-    yq command.
-    https://github.com/mikefarah/yq
-    default: yq
-
-  HELM
-    helm command.
-    default: helm
-
-  KUBECTL
-    kubectl command.
-    default: kubectl
-
-  KUSTOMIZE_OPT
-    Options for kubectl kustomize.
-    default:
+Requires:
+- Python 3.12.2
+- https://github.com/yaml/pyyaml 6.0.1
 ```
