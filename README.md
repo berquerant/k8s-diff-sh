@@ -2,18 +2,18 @@
 
 Diff tools for Kubernetes.
 
-## helm_diff.sh
+## helm.sh
 
 ```
-❯ ./helm_diff.sh
+❯ ./helm.sh
 helm template and diff
-helm_diff.sh CHART LEFT_VALUES RIGHT_VALUES [QUERY_LEFT] [QUERY_RIGHT]
+helm.sh CHART LEFT_VALUES RIGHT_VALUES [QUERY_LEFT] [QUERY_RIGHT]
 
 e.g.
-helm_diff.sh datadog/datadog left_values.yml right_values.yml
-helm_diff.sh datadog/datadog default right_values.yml
-HELM_BUILD_OPT='--version 3.54.2' helm_diff.sh datadog/datadog left_values.yml right_values.yml
-HELM_BUILD_OPT='--version 3.54.2' HELM_BULD_OPT_RIGHT='--version 3.65.0' helm_diff.sh datadog/datadog default default
+helm.sh datadog/datadog left_values.yml right_values.yml
+helm.sh datadog/datadog default right_values.yml
+HELM_OPT='--version 3.54.2' helm.sh datadog/datadog left_values.yml right_values.yml
+HELM_OPT='--version 3.54.2' HELM_OPT_RIGHT='--version 3.65.0' helm.sh datadog/datadog default default
 
 Common environment variables:
   SED
@@ -46,17 +46,17 @@ Common environment variables:
     default:
 ```
 
-## helm_diff_between_branches.sh
+## helm_branch.sh
 
 ```
-❯ ./helm_diff_between_branches.sh
+❯ ./helm_branch.sh
 helm build and diff between branches
-helm_diff_between_branches.sh DIR LEFT_BRANCH RIGHT_BRANCH [QUERY_LEFT] [QUERY_RIGHT]
+helm_branch.sh DIR LEFT_BRANCH RIGHT_BRANCH [QUERY_LEFT] [QUERY_RIGHT]
 
 e.g.
-helm_diff_between_branches.sh path/to/chart/dir master changed
-HELM_BUILD_OPT='--values path/to/values.yaml' helm_diff_between_branches.sh path/to/chart/dir master changed
-HELM_BUILD_OPT_RIGHT='--values path/to/values.yaml' helm_diff_between_branches.sh path/to/chart/dir master changed
+helm_branch.sh path/to/chart/dir master changed
+HELM_OPT='--values path/to/values.yaml' helm_branch.sh path/to/chart/dir master changed
+HELM_OPT_RIGHT='--values path/to/values.yaml' helm_branch.sh path/to/chart/dir master changed
 
 Common environment variables:
   SED
@@ -89,15 +89,15 @@ Common environment variables:
     default:
 ```
 
-## kustomize_diff.sh
+## kustomize.sh
 
 ```
-❯ ./kustomize_diff.sh
+❯ ./kustomize.sh
 kustomize build and diff
-kustomize_diff.sh LEFT_DIR RIGHT_DIR [QUERY_LEFT] [QUERY_RIGHT]
+kustomize.sh LEFT_DIR RIGHT_DIR [QUERY_LEFT] [QUERY_RIGHT]
 
 e.g.
-kustomize_diff.sh overlays/env1 overlays/env2 'select(.metadata.name==\"xxx\")'
+kustomize.sh overlays/env1 overlays/env2 'select(.metadata.name==\"xxx\")'
 
 Common environment variables:
   SED
@@ -130,15 +130,15 @@ Common environment variables:
     default:
 ```
 
-## kustomize_diff_between_branches.sh
+## kustomize_branch.sh
 
 ```
-❯ ./kustomize_diff_between_branches.sh
+❯ ./kustomize_branch.sh
 kustomize build and diff between branches
-kustomize_diff_between_branches.sh DIR LEFT_BRANCH RIGHT_BRANCH [QUERY_LEFT] [QUERY_RIGHT]
+kustomize_branch.sh DIR LEFT_BRANCH RIGHT_BRANCH [QUERY_LEFT] [QUERY_RIGHT]
 
 e.g.
-kustomize_diff_between_branches.sh overlays/env master new 'select(.metadata.name==\"\xxx)'
+kustomize_branch.sh overlays/env master new 'select(.metadata.name==\"\xxx)'
 
 Common environment variables:
   SED
