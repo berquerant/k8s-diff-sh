@@ -11,8 +11,8 @@ ${name} DIR LEFT_BRANCH RIGHT_BRANCH [QUERY_LEFT] [QUERY_RIGHT]
 
 e.g.
 ${name} path/to/chart/dir master changed
-HELM_BUILD_OPT='--values path/to/values.yaml' ${name} path/to/chart/dir master changed
-HELM_BUILD_OPT_RIGHT='--values path/to/values.yaml' ${name} path/to/chart/dir master changed
+HELM_OPT='--values path/to/values.yaml' ${name} path/to/chart/dir master changed
+HELM_OPT_RIGHT='--values path/to/values.yaml' ${name} path/to/chart/dir master changed
 
 EOS
     __usage
@@ -29,8 +29,8 @@ original_branch="$($(git_cmd) branch --show-current)"
 
 left_result="$(mktemp)"
 right_result="$(mktemp)"
-left_opt="$HELM_BUILD_OPT"
-right_opt="${HELM_BULD_OPT_RIGHT:-$left_opt}"
+left_opt="$HELM_OPT"
+right_opt="${HELM_OPT_RIGHT:-$left_opt}"
 
 git_cmd switch "$left"
 left_sha="$($(git_cmd) rev-parse --short HEAD)"

@@ -12,8 +12,8 @@ ${name} CHART LEFT_VALUES RIGHT_VALUES [QUERY_LEFT] [QUERY_RIGHT]
 e.g.
 ${name} datadog/datadog left_values.yml right_values.yml
 ${name} datadog/datadog default right_values.yml
-HELM_BUILD_OPT='--version 3.54.2' ${name} datadog/datadog left_values.yml right_values.yml
-HELM_BUILD_OPT='--version 3.54.2' HELM_BULD_OPT_RIGHT='--version 3.65.0' ${name} datadog/datadog default default
+HELM_OPT='--version 3.54.2' ${name} datadog/datadog left_values.yml right_values.yml
+HELM_OPT='--version 3.54.2' HELM_OPT_RIGHT='--version 3.65.0' ${name} datadog/datadog default default
 
 EOS
     __usage
@@ -37,8 +37,8 @@ fi
 
 left_result="$(mktemp)"
 right_result="$(mktemp)"
-left_opt="$HELM_BUILD_OPT"
-right_opt="${HELM_BULD_OPT_RIGHT:-$left_opt}"
+left_opt="$HELM_OPT"
+right_opt="${HELM_OPT_RIGHT:-$left_opt}"
 
 helm_sorted --generate-name "$target" --values "$left" $left_opt | yq_cmd "$query_left" > "$left_result"
 helm_sorted --generate-name "$target" --values "$right" $right_opt | yq_cmd "$query_right" > "$right_result"
