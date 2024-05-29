@@ -181,6 +181,7 @@ object.sh LEFT RIGHT [ID_ONLY]
 e.g.
 object.sh left.yml right.yml
 object.sh left.yml right.yml 1 # object id diff only
+object.sh default right.yml 1 # dump object ids of right.yml
 OBJDIFF='diff' object.sh left.yml right.yml # OBJDIFF overrides DIFF
 
 Common environment variables:
