@@ -13,7 +13,7 @@ e.g.
 ${name} left.yml right.yml
 OBJDIFF_ID=1 ${name} left.yml right.yml # object id diff only
 OBJDIFF_ID=1 ${name} default right.yml # dump object ids of right.yml
-OBJDIFF='diff' ${name} left.yml right.yml # OBJDIFF overrides DIFF
+CONTEXT=5 ${name} left.yml right.yml # diff context lines
 
 EOS
     __usage
@@ -23,83 +23,18 @@ fi
 left="$1"
 right="$2"
 objid_only="$OBJDIFF_ID"
-
-object2id() {
-    yq_cmd '(.apiVersion) + "^" + (.kind) + "^" + (.metadata.namespace) + "^" + (.metadata.name)' -r | grep -v '^-'
-}
-
-objdiff_cmd() {
-    if [ -n "$OBJDIFF" ] ; then
-        $OBJDIFF "$@"
-    else
-        diff_cmd "$@"
-    fi
-}
+context="${CONTEXT:-3}"
 
 if [ "$left" = "default" ] ; then
-    left_default=1
     left="$(mktemp)"
 fi
 if [ "$right" = "default" ] ; then
-    right_default=1
     right="$(mktemp)"
 fi
 
+cmd="python ${thisd}/object.py"
 if [ -n "$objid_only" ] ; then
-    ltmp="$(mktemp)"
-    rtmp="$(mktemp)"
-    cat "$left" | object2id | sort > "$ltmp"
-    cat "$right" | object2id | sort > "$rtmp"
-    if [ -n "$left_default" ] ; then
-        left="default"
-    fi
-    if [ -n "$right_default" ] ; then
-        right="default"
-    fi
-    lname="${left}"
-    rname="${right}"
-
-    objdiff_cmd "$ltmp" "$rtmp" |\
-        sed_cmd -e "s|${ltmp}|${lname}|" \
-                -e "s|${rtmp}|${rname}|"
-    exit
+    cmd="${cmd} -I"
 fi
-
-query_object_by_id() {
-    obj_id="$1"
-
-    api="$(echo $obj_id | cut -d '^' -f 1)"
-    kind="$(echo $obj_id | cut -d '^' -f 2)"
-    ns="$(echo $obj_id | cut -d '^' -f 3)"
-    name="$(echo $obj_id | cut -d '^' -f 4)"
-
-    query="select(.apiVersion == \"${api}\" and .kind == \"${kind}\" and .metadata.namespace == \"${ns}\" and .metadata.name == \"${name}\")"
-    yq_cmd "$query" | sort_yaml
-}
-
-id_list="$(mktemp)"
-cat "$left" | object2id >> "${id_list}"
-cat "$right" | object2id >> "${id_list}"
-
-ltmp="$(mktemp)"
-rtmp="$(mktemp)"
-cat "$id_list" | sort -u | while read obj_id ; do
-    echo "----------"
-    echo "CHECK ${obj_id}"
-    cat "$left" | query_object_by_id "$obj_id" > "$ltmp"
-    cat "$right" | query_object_by_id "$obj_id" > "$rtmp"
-    if [ -n "$left_default" ] ; then
-        lname="default"
-    else
-        lname="${left}"
-    fi
-    if [ -n "$right_default" ] ; then
-        rname="default"
-    else
-        rname="${right}"
-    fi
-
-    objdiff_cmd "$ltmp" "$rtmp" |\
-        sed_cmd -e "s|${ltmp}|${lname}|" \
-                -e "s|${rtmp}|${rname}|"
-done
+cmd="${cmd} -C ${context} ${left} ${right}"
+$cmd
