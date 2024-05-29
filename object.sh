@@ -11,8 +11,8 @@ ${name} LEFT RIGHT
 
 e.g.
 ${name} left.yml right.yml
-OBJDIFF_ID=1 ${name} left.yml right.yml # object id diff only
-OBJDIFF_ID=1 ${name} default right.yml # dump object ids of right.yml
+DIFF_ID=1 ${name} left.yml right.yml # object id diff only
+DIFF_ID=1 ${name} default right.yml # dump object ids of right.yml
 CONTEXT=5 ${name} left.yml right.yml # diff context lines
 
 EOS
@@ -22,7 +22,7 @@ fi
 
 left="$1"
 right="$2"
-objid_only="$OBJDIFF_ID"
+objid_only="$DIFF_ID"
 context="${CONTEXT:-3}"
 
 if [ "$left" = "default" ] ; then
