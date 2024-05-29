@@ -34,11 +34,11 @@ right_opt="${HELM_OPT_RIGHT:-$left_opt}"
 
 git_cmd switch "$left"
 left_sha="$($(git_cmd) rev-parse --short HEAD)"
-helm_build "$target" $left_opt | yq_cmd "$query_left" > "$left_result"
+helm_build --generate-name "$target" $left_opt | yq_cmd "$query_left" > "$left_result"
 
 git_cmd switch "$right"
 right_sha="$($(git_cmd) rev-parse --short HEAD)"
-helm_build "$target" $right_opt | yq_cmd "$query_right" > "$right_result"
+helm_build --generate-name "$target" $right_opt | yq_cmd "$query_right" > "$right_result"
 
 left_name="[${left}] ${left_sha} ${target} ${query_left}"
 right_name="[${right}] ${right_sha} ${target} ${query_right}"
