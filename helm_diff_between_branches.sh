@@ -1,6 +1,5 @@
 #!/bin/bash
 
-set -e
 thisd="$(cd $(dirname $0); pwd)"
 . "${thisd}/common.sh"
 
@@ -43,6 +42,7 @@ helm_build "$target" $right_opt | yq_cmd "$query_right" > "$right_result"
 
 left_name="[${left}] ${left_sha} ${target} ${query_left}"
 right_name="[${right}] ${right_sha} ${target} ${query_right}"
+
 diff_cmd "$left_result" "$right_result" |\
     sed_cmd -e "s|${left_result}|${left_name}|" \
             -e "s|${right_result}|${right_name}|"

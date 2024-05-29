@@ -1,6 +1,5 @@
 #!/bin/bash
 
-set -e
 thisd="$(cd $(dirname $0); pwd)"
 . "${thisd}/common.sh"
 
@@ -59,6 +58,7 @@ if [ -n "$objid_only" ] ; then
     fi
     lname="${left}"
     rname="${right}"
+
     objdiff_cmd "$ltmp" "$rtmp" |\
         sed_cmd -e "s|${ltmp}|${lname}|" \
                 -e "s|${rtmp}|${rname}|"
@@ -98,6 +98,7 @@ cat "$id_list" | sort -u | while read obj_id ; do
     else
         rname="${right}"
     fi
+
     objdiff_cmd "$ltmp" "$rtmp" |\
         sed_cmd -e "s|${ltmp}|${lname}|" \
                 -e "s|${rtmp}|${rname}|"
