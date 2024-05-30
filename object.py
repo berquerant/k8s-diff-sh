@@ -4,20 +4,29 @@ from dataclasses import dataclass
 from difflib import unified_diff
 
 
-@dataclass
+def load(filename: str):
+    with open(filename) as f:
+        return list(yaml.safe_load_all(f))
+
+
+@dataclass(frozen=True)
 class ObjectID:
     api_version: str
     kind: str
     namespace: str
     name: str
 
-    def __str__(self) -> str:
+    @property
+    def key(self) -> str:
         return "^".join([self.api_version, self.kind, self.namespace, self.name])
 
+    @property
+    def readable(self) -> str:
+        return ">".join([self.api_version, self.kind, self.namespace, self.name])
 
-def load(filename: str):
-    with open(filename) as f:
-        return list(yaml.safe_load_all(f))
+    @staticmethod
+    def sorted(ids: list["ObjectID"]) -> list["ObjectID"]:
+        return sorted(ids, key=lambda x: x.key)
 
 
 def object2id(obj) -> ObjectID:
@@ -30,7 +39,7 @@ def object2id(obj) -> ObjectID:
 
 
 class ObjectMap:
-    def __init__(self, filename: str, map: dict[str, str]):
+    def __init__(self, filename: str, map: dict[ObjectID, str]):
         self.filename = filename
         self.map = map
 
@@ -39,39 +48,44 @@ class ObjectMap:
         d = {}
         for doc in load(filename):
             obj_id = object2id(doc)
-            d[str(obj_id)] = yaml.dump(doc)
+            d[obj_id] = yaml.dump(doc)
         return ObjectMap(filename, d)
 
-    def keys(self) -> list[str]:
-        return sorted(list(self.map.keys()))
+    @property
+    def keys(self) -> list[ObjectID]:
+        return list(self.map.keys())
 
-    def get(self, key: str) -> str:
+    def get(self, key: ObjectID) -> str:
         return self.map.get(key, "")
 
 
-def diff(left: ObjectMap, right: ObjectMap, n: int = 3):
-    keys = sorted(list(set(left.keys() + right.keys())))
-    for key in keys:
-        l = left.get(key).splitlines(keepends=True)
-        r = right.get(key).splitlines(keepends=True)
-        result = unified_diff(
-            l,
-            r,
-            fromfile=f"{left.filename} {key}",
-            tofile=f"{right.filename} {key}",
+@dataclass
+class Diff:
+    left: ObjectMap
+    right: ObjectMap
+
+    def diff(self, n: int = 3):
+        keys = ObjectID.sorted(list(set(self.left.keys + self.right.keys)))
+        for key in keys:
+            l = self.left.get(key).splitlines(keepends=True)
+            r = self.right.get(key).splitlines(keepends=True)
+            result = unified_diff(
+                l,
+                r,
+                fromfile=f"{self.left.filename} {key.readable}",
+                tofile=f"{self.right.filename} {key.readable}",
+                n=n,
+            )
+            yield result
+
+    def diff_id(self, n: int = 3):
+        yield unified_diff(
+            [f"{x.readable}\n" for x in ObjectID.sorted(self.left.keys)],
+            [f"{x.readable}\n" for x in ObjectID.sorted(self.right.keys)],
+            fromfile=f"{self.left.filename}",
+            tofile=f"{self.right.filename}",
             n=n,
         )
-        yield result
-
-
-def diff_id(left: ObjectMap, right: ObjectMap, n: int = 3):
-    return unified_diff(
-        [f"{x}\n" for x in left.keys()],
-        [f"{x}\n" for x in right.keys()],
-        fromfile=f"{left.filename}",
-        tofile=f"{right.filename}",
-        n=n,
-    )
 
 
 if __name__ == "__main__":
@@ -109,9 +123,8 @@ if __name__ == "__main__":
 
     lmap = ObjectMap.build(left)
     rmap = ObjectMap.build(right)
+    diff = Diff(left=lmap, right=rmap)
 
-    if args.id:
-        sys.stdout.writelines(diff_id(lmap, rmap, n=args.context))
-    else:
-        for d in diff(lmap, rmap, n=args.context):
-            sys.stdout.writelines(d)
+    result = diff.diff_id(n=args.context) if args.id else diff.diff(n=args.context)
+    for x in result:
+        sys.stdout.writelines(x)
