@@ -17,25 +17,29 @@ class ObjectID:
     name: str
 
     @property
+    def key_elems(self) -> list[str]:
+        return [self.api_version, self.kind, self.namespace, self.name]
+
+    @property
     def key(self) -> str:
-        return "^".join([self.api_version, self.kind, self.namespace, self.name])
+        return "^".join(self.key_elems)
 
     @property
     def readable(self) -> str:
-        return ">".join([self.api_version, self.kind, self.namespace, self.name])
+        return ">".join(self.key_elems)
 
     @staticmethod
     def sorted(ids: list["ObjectID"]) -> list["ObjectID"]:
         return sorted(ids, key=lambda x: x.key)
 
-
-def object2id(obj) -> ObjectID:
-    return ObjectID(
-        api_version=obj["apiVersion"],
-        kind=obj["kind"],
-        namespace=obj["metadata"].get("namespace", ""),
-        name=obj["metadata"]["name"],
-    )
+    @staticmethod
+    def from_obj(obj) -> "ObjectID":
+        return ObjectID(
+            api_version=obj["apiVersion"],
+            kind=obj["kind"],
+            namespace=obj["metadata"].get("namespace", ""),
+            name=obj["metadata"]["name"],
+        )
 
 
 class ObjectMap:
@@ -47,7 +51,7 @@ class ObjectMap:
     def build(filename: str) -> "ObjectMap":
         d = {}
         for doc in load(filename):
-            obj_id = object2id(doc)
+            obj_id = ObjectID.from_obj(doc)
             d[obj_id] = yaml.dump(doc)
         return ObjectMap(filename, d)
 
@@ -67,16 +71,13 @@ class Diff:
     def diff(self, n: int = 3):
         keys = ObjectID.sorted(list(set(self.left.keys + self.right.keys)))
         for key in keys:
-            l = self.left.get(key).splitlines(keepends=True)
-            r = self.right.get(key).splitlines(keepends=True)
-            result = unified_diff(
-                l,
-                r,
+            yield unified_diff(
+                self.left.get(key).splitlines(keepends=True),
+                self.right.get(key).splitlines(keepends=True),
                 fromfile=f"{self.left.filename} {key.readable}",
                 tofile=f"{self.right.filename} {key.readable}",
                 n=n,
             )
-            yield result
 
     def diff_id(self, n: int = 3):
         yield unified_diff(
