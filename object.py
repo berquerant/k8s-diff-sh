@@ -54,7 +54,7 @@ class ObjectMap:
             obj_id = ObjectID.from_obj(doc)
             if obj_id in d:
                 raise Exception(f"Duplicated object: {obj_id.readable} in {filename}")
-            d[obj_id] = yaml.dump(doc)
+            d[obj_id] = yaml.dump(doc, sort_keys=True)
         return ObjectMap(filename, d)
 
     @property
