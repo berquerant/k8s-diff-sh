@@ -113,3 +113,7 @@ helm_build() {
     helm_build_prepare "$target" > /dev/stderr
     helm_sorted "$@"
 }
+
+git_remove_untracked() {
+    git_cmd clean -d -f
+}

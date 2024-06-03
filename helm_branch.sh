@@ -14,6 +14,8 @@ ${name} path/to/chart/dir master changed
 HELM_OPT='--values path/to/values.yaml' ${name} path/to/chart/dir master changed
 HELM_OPT_RIGHT='--values path/to/values.yaml' ${name} path/to/chart/dir master changed
 
+NOTE:
+This script removes untracked git files and directories to ensure helm dependency build.
 EOS
     __usage
     exit 1
@@ -25,20 +27,22 @@ right="$3"
 query_left="${4}"
 query_right="${5:-$4}"
 
-original_branch="$($(git_cmd) branch --show-current)"
+original_branch="$(git_cmd branch --show-current)"
 
 left_result="$(mktemp)"
 right_result="$(mktemp)"
 left_opt="$HELM_OPT"
 right_opt="${HELM_OPT_RIGHT:-$left_opt}"
 
+git_remove_untracked
 git_cmd switch "$left"
-left_sha="$($(git_cmd) rev-parse --short HEAD)"
-helm_build --generate-name "$target" $left_opt | yq_cmd "$query_left" > "$left_result"
+left_sha="$(git_cmd rev-parse --short HEAD)"
+helm_build "$target" --generate-name $left_opt | yq_cmd "$query_left" > "$left_result"
 
+git_remove_untracked
 git_cmd switch "$right"
-right_sha="$($(git_cmd) rev-parse --short HEAD)"
-helm_build --generate-name "$target" $right_opt | yq_cmd "$query_right" > "$right_result"
+right_sha="$(git_cmd rev-parse --short HEAD)"
+helm_build "$target" --generate-name $right_opt | yq_cmd "$query_right" > "$right_result"
 
 left_name="[${left}] ${left_sha} ${target} ${query_left}"
 right_name="[${right}] ${right_sha} ${target} ${query_right}"
@@ -47,4 +51,5 @@ diff_cmd "$left_result" "$right_result" |\
     sed_cmd -e "s|${left_result}|${left_name}|" \
             -e "s|${right_result}|${right_name}|"
 
+git_remove_untracked
 git_cmd switch "$original_branch"
