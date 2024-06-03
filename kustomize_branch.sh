@@ -23,17 +23,17 @@ right="$3"
 query_left="${4}"
 query_right="${5:-$4}"
 
-original_branch="$($(git_cmd) branch --show-current)"
+original_branch="$(git_cmd branch --show-current)"
 
 left_kustomized="$(mktemp)"
 right_kustomized="$(mktemp)"
 
 git_cmd switch "$left"
-left_sha="$($(git_cmd) rev-parse --short HEAD)"
+left_sha="$(git_cmd rev-parse --short HEAD)"
 kustomize_sorted "$target" | yq_cmd "$query_left" > "$left_kustomized"
 
 git_cmd switch "$right"
-right_sha="$($(git_cmd) rev-parse --short HEAD)"
+right_sha="$(git_cmd rev-parse --short HEAD)"
 kustomize_sorted "$target" | yq_cmd "$query_right" > "$right_kustomized"
 
 left_name="[${left}] ${left_sha} ${target} ${query_left}"
