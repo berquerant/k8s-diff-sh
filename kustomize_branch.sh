@@ -10,7 +10,7 @@ kustomize build and diff between branches
 ${name} DIR LEFT_BRANCH RIGHT_BRANCH [QUERY_LEFT] [QUERY_RIGHT]
 
 e.g.
-${name} overlays/env master new 'select(.metadata.name==\"\xxx)'
+${name} overlays/env master new 'select(.metadata.name=="xxx")'
 
 EOS
     __usage

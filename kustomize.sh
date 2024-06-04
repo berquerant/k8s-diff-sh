@@ -10,7 +10,7 @@ kustomize build and diff
 ${name} LEFT_DIR RIGHT_DIR [QUERY_LEFT] [QUERY_RIGHT]
 
 e.g.
-${name} overlays/env1 overlays/env2 'select(.metadata.name==\"xxx\")'
+${name} overlays/env1 overlays/env2 'select(.metadata.name=="xxx")'
 
 EOS
     __usage
