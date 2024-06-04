@@ -40,8 +40,8 @@ right_result="$(mktemp)"
 left_opt="$HELM_OPT"
 right_opt="${HELM_OPT_RIGHT:-$left_opt}"
 
-helm_build "$target" --values "$left" --generate-name $left_opt | yq_cmd "$query_left" > "$left_result"
-helm_build "$target" --values "$right" --generate-name $right_opt | yq_cmd "$query_right" > "$right_result"
+helm_sorted "$target" --values "$left" --generate-name $left_opt | yq_cmd "$query_left" > "$left_result"
+helm_sorted "$target" --values "$right" --generate-name $right_opt | yq_cmd "$query_right" > "$right_result"
 
 if [ -n "$left_default" ] ; then
     left="default"
