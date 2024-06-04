@@ -1,10 +1,12 @@
 #!/bin/bash
 
+thisd="$(cd $(dirname $0); pwd)"
+
 __default() {
     case "$1" in
         SED) echo "sed" ;;
         GIT) echo "git" ;;
-        DIFF) echo "diff -u" ;;
+        DIFF) echo "${thisd}/object.sh" ;;
         YQ) echo "yq" ;;
         HELM) echo "helm" ;;
         KUBECTL) echo "kubectl" ;;
