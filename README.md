@@ -63,6 +63,20 @@ object.sh left.yml right.yml
 DIFF_ID=1 object.sh left.yml right.yml # object id diff only
 DIFF_ID=1 object.sh default right.yml # dump object ids of right.yml
 CONTEXT=5 object.sh left.yml right.yml # diff context lines
+```
+
+## object.py.sh
+
+```
+❯ ./object.py.sh
+diff by object
+object.py.sh LEFT RIGHT
+
+e.g.
+object.py.sh left.yml right.yml
+DIFF_ID=1 object.py.sh left.yml right.yml # object id diff only
+DIFF_ID=1 object.py.sh default right.yml # dump object ids of right.yml
+CONTEXT=5 object.py.sh left.yml right.yml # diff context lines
 
 Requires:
 - Python 3.12.2
