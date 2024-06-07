@@ -22,11 +22,11 @@ class ObjectID:
 
     @property
     def key(self) -> str:
-        return "^".join(self.key_elems)
+        return ">".join(self.key_elems)
 
     @property
     def readable(self) -> str:
-        return ">".join(self.key_elems)
+        return self.key
 
     @staticmethod
     def sorted(ids: list["ObjectID"]) -> list["ObjectID"]:
@@ -54,7 +54,7 @@ class ObjectMap:
             obj_id = ObjectID.from_obj(doc)
             if obj_id in d:
                 raise Exception(f"Duplicated object: {obj_id.readable} in {filename}")
-            d[obj_id] = yaml.dump(doc, sort_keys=True)
+            d[obj_id] = yaml.dump(doc, sort_keys=True, indent=2)
         return ObjectMap(filename, d)
 
     @property
