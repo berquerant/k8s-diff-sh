@@ -28,15 +28,15 @@ query_right="${5:-$4}"
 
 if [ "$left" = "default" ] ; then
     left_default=1
-    left="$(mktemp)"
+    left="$(get_tmpfile)"
 fi
 if [ "$right" = "default" ] ; then
     right_default=1
-    right="$(mktemp)"
+    right="$(get_tmpfile)"
 fi
 
-left_result="$(mktemp)"
-right_result="$(mktemp)"
+left_result="$(get_tmpfile)"
+right_result="$(get_tmpfile)"
 left_opt="$HELM_OPT"
 right_opt="${HELM_OPT_RIGHT:-$left_opt}"
 

@@ -52,7 +52,7 @@ prepare_manifests() {
 
 # $1 : rootd
 uniq_id() {
-    t="$(mktemp)"
+    t="$(get_tmpfile)"
     cat "$(id_file $1/left)" >> "$t"
     cat "$(id_file $1/right)" >> "$t"
     cat "$t" | sort -u | grep -v '^$'
@@ -65,7 +65,7 @@ find_manifest() {
     if [ -n "$found" ] ; then
         echo "$found"
     else
-        mktemp
+        get_tmpfile
     fi
 }
 
@@ -138,7 +138,7 @@ left="$1"
 right="$2"
 objid_only="$DIFF_ID"
 
-rootd="$(mktemp -d)"
+rootd="$(get_tmpd)/object.sh"
 mkdir -p "$rootd"
 prepare_manifests "$left" "$right" "$rootd"
 

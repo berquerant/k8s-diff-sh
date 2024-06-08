@@ -25,8 +25,8 @@ query_right="${5:-$4}"
 
 original_branch="$(git_cmd branch --show-current)"
 
-left_kustomized="$(mktemp)"
-right_kustomized="$(mktemp)"
+left_kustomized="$(get_tmpfile)"
+right_kustomized="$(get_tmpfile)"
 
 git_cmd switch "$left"
 left_sha="$(git_cmd rev-parse --short HEAD)"

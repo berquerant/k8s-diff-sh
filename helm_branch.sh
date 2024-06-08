@@ -29,8 +29,8 @@ query_right="${5:-$4}"
 
 original_branch="$(git_cmd branch --show-current)"
 
-left_result="$(mktemp)"
-right_result="$(mktemp)"
+left_result="$(get_tmpfile)"
+right_result="$(get_tmpfile)"
 left_opt="$HELM_OPT"
 right_opt="${HELM_OPT_RIGHT:-$left_opt}"
 

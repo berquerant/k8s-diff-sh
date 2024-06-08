@@ -28,10 +28,10 @@ objid_only="$DIFF_ID"
 context="${CONTEXT:-3}"
 
 if [ "$left" = "default" ] ; then
-    left="$(mktemp)"
+    left="$(get_tmpfile)"
 fi
 if [ "$right" = "default" ] ; then
-    right="$(mktemp)"
+    right="$(get_tmpfile)"
 fi
 
 cmd="python ${thisd}/object.py"
