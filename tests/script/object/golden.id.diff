@@ -1,0 +1,8 @@
+--- tests/data/object/left.yaml
++++ tests/data/object/right.yaml
+@@ -1,4 +1,4 @@
+ apps/v1>Deployment>test>nginx-deployment
+ rbac.authorization.k8s.io/v1>Role>test>pod-reader
+-rbac.authorization.k8s.io/v1>RoleBinding>test>read-pods
++v1>ServiceAccount>default>sa
+ v1>ServiceAccount>test>sa

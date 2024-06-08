@@ -1,0 +1,4 @@
+resources:
+  - ./deploy.yaml
+  - ./sa.yaml
+  - ./role.yaml
