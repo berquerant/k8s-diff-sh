@@ -4,7 +4,7 @@ thisd="$(cd $(dirname $0); pwd)"
 . "${thisd}/common.sh"
 
 manifest2id() {
-    yq_cmd '(.apiVersion)+">"+(.kind)+">"+(.metadata.namespace)+">"+(.metadata.name)' -r | grep -v '^-'
+    yq_cmd '(.apiVersion)+">"+(.kind)+">"+(.metadata.namespace // "")+">"+(.metadata.name)' -r | grep -v '^-'
 }
 
 # $1 : manifest
@@ -46,20 +46,24 @@ prepare_manifests() {
     rid="$(id_file $3/right)"
     divide_manifests "$1" "$3/left" > "$lindex"
     divide_manifests "$2" "$3/right" > "$rindex"
-    cat "$lindex" | cut -d " " -f 1 | sort > "$lid"
-    cat "$rindex" | cut -d " " -f 1 | sort > "$rid"
+    cat "$lindex" | cut -d " " -f 1 | sort | grep -v '^$' > "$lid"
+    cat "$rindex" | cut -d " " -f 1 | sort | grep -v '^$' > "$rid"
 }
 
 # $1 : rootd
 uniq_id() {
-    (cat "$(id_file $1/left)" ; cat "$(id_file $1/right)") | sort -u
+    t="$(mktemp)"
+    cat "$(id_file $1/left)" >> "$t"
+    cat "$(id_file $1/right)" >> "$t"
+    cat "$t" | sort -u | grep -v '^$'
 }
 
 # $1 : id
 # $2 : index file
 find_manifest() {
-    if grep -q "$1" "$2" ; then
-        grep "$1" "$2" | cut -d " " -f 2
+    found="$(awk -v x=$1 '$1==x{print $2}' $2)"
+    if [ -n "$found" ] ; then
+        echo "$found"
     else
         mktemp
     fi
