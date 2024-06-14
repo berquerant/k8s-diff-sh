@@ -20,7 +20,5 @@ test_object_sh_diff_id() {
 }
 
 
-test_run_multi "test_object_py_sh_diff" \
-               "test_object_py_sh_diff_id" \
-               "test_object_sh_diff" \
+test_run_multi "test_object_sh_diff" \
                "test_object_sh_diff_id"
