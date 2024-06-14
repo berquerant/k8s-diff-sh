@@ -3,6 +3,21 @@
 thisd="$(cd $(dirname $0); pwd)"
 . "${thisd}/common.sh"
 
+__object_rootd="$(get_tmpd)"
+leftd() {
+    getd "${__object_rootd}/left"
+}
+rightd() {
+    getd "${__object_rootd}/right"
+}
+documentd() {
+    getd "$1/documents"
+}
+index_file() {
+    mkdir -p "$1"
+    echo "$1/index"
+}
+
 manifest2id() {
     yq_cmd '(.apiVersion)+">"+(.kind)+">"+(.metadata.namespace // "")+">"+(.metadata.name)' -r | grep -v '^-'
 }
@@ -10,52 +25,35 @@ manifest2id() {
 # $1 : manifest
 # $2 : rootd
 divide_manifests() {
-    mkdir -p "$2"
+    manifest="$1"
+    rootd="$2"
     index=0
     while true ; do
-        file="$2/${index}"
-        yq_cmd "select(documentIndex == ${index})" "$1" | sort_yaml > "$file"
+        file="$(documentd $rootd)/${index}"
+        yq_cmd "select(documentIndex == ${index})" "$manifest" | sort_yaml > "$file"
         if [ -z "$(cat $file)" ] ; then
             break
         fi
         id="$(cat $file | manifest2id)"
-        echo "${id} ${file}"
+        echo "${id} ${file}" >> "$(index_file $rootd)"
         index=$((index + 1))
     done
 }
 
-# $1 : rootd
-index_file() {
-    mkdir -p "$1"
-    echo "$1/index"
-}
-
-# $1 : rootd
-id_file() {
-    mkdir -p "$1"
-    echo "$1/id"
-}
-
 # $1 : left
 # $2 : right
-# $3 : rootd
 prepare_manifests() {
-    lindex="$(index_file $3/left)"
-    rindex="$(index_file $3/right)"
-    lid="$(id_file $3/left)"
-    rid="$(id_file $3/right)"
-    divide_manifests "$1" "$3/left" > "$lindex"
-    divide_manifests "$2" "$3/right" > "$rindex"
-    cat "$lindex" | cut -d " " -f 1 | sort | grep -v '^$' > "$lid"
-    cat "$rindex" | cut -d " " -f 1 | sort | grep -v '^$' > "$rid"
+    divide_manifests "$1" "$(leftd)"
+    divide_manifests "$2" "$(rightd)"
 }
 
-# $1 : rootd
+# $1 rootd
 uniq_id() {
-    t="$(get_tmpfile)"
-    cat "$(id_file $1/left)" >> "$t"
-    cat "$(id_file $1/right)" >> "$t"
-    cat "$t" | sort -u | grep -v '^$'
+    awk '{print $1}' "$(index_file $1)" | sort
+}
+
+uniq_id_all() {
+    (uniq_id "$(leftd)" ; uniq_id "$(rightd)") | sort -u
 }
 
 # $1 : id
@@ -71,36 +69,50 @@ find_manifest() {
 
 # $1 : left
 # $2 : right
-# $3 : rootd
-# $4 : id
-diff_object() {
-    lfile="$(find_manifest $4 $(index_file $3/left))"
-    rfile="$(find_manifest $4 $(index_file $3/right))"
+# $3 : id
+diff_object_by_id() {
+    left="$1"
+    right="$2"
+    id="$3"
 
-    left_name="$1 $4"
-    right_name="$2 $4"
+    lfile="$(find_manifest $id $(index_file $(leftd)))"
+    rfile="$(find_manifest $id $(index_file $(rightd)))"
+
+    left_name="${left} ${id}"
+    right_name="${right} ${id}"
     set +e
+    ret=0
     __diff "$lfile" "$rfile" |\
         sed_cmd -e "s|${lfile}|${left_name}|" \
                 -e "s|${rfile}|${right_name}|"
+    ret=$?
     set -e
+    return $ret
 }
 
 # $1 : left
 # $2 : right
-# $3 : rootd
-diff_object_by_id() {
-    uniq_id "$3" | while read id ; do
-        diff_object "$1" "$2" "$3" "$id"
-    done
+diff_object() {
+    id_list="$(get_tmpfile)"
+    uniq_id_all > "$id_list"
+    ret=0
+    while read id ; do
+        diff_object_by_id "$1" "$2" "$id"
+        r=$?
+        if [ $r -gt 0 ] ; then
+            ret=$r
+        fi
+    done < "$id_list"
+    return $ret
 }
 
 # $1 : left
 # $2 : right
-# $3 : rootd
 diff_id() {
-    lfile="$(id_file $3/left)"
-    rfile="$(id_file $3/right)"
+    lfile="$(get_tmpfile)"
+    rfile="$(get_tmpfile)"
+    uniq_id "$(leftd)" > "$lfile"
+    uniq_id "$(rightd)" > "$rfile"
     left_name="$1"
     right_name="$2"
     __diff "$lfile" "$rfile" |\
@@ -138,12 +150,10 @@ left="$1"
 right="$2"
 objid_only="$DIFF_ID"
 
-rootd="$(get_tmpd)/object.sh"
-mkdir -p "$rootd"
-prepare_manifests "$left" "$right" "$rootd"
+prepare_manifests "$left" "$right"
 
 if [ -n "$objid_only" ] ; then
-    diff_id "$left" "$right" "$rootd"
+    diff_id "$left" "$right"
 else
-    diff_object_by_id "$left" "$right" "$rootd"
+    diff_object "$left" "$right"
 fi

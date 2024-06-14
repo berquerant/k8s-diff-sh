@@ -12,7 +12,7 @@ __default() {
         HELM) echo "helm" ;;
         KUBECTL) echo "kubectl" ;;
         KUSTOMIZE_OPT) echo "" ;;
-        TMPD) echo "$default_tmpd" ;;
+        WORKD) echo "$default_tmpd" ;;
         *) echo "UNKNWON__DEFAULT" ;;
     esac
 }
@@ -49,9 +49,9 @@ Common environment variables:
     Options for kubectl kustomize.
     default: $(__default KUSTOMIZE_OPT)
 
-  TMPD
+  WORKD
     Temporary directory for temporary files.
-    default: $(__default TMPD)
+    default: $(__default WORKD)
 EOS
 }
 
@@ -126,10 +126,14 @@ git_remove_untracked() {
     git_cmd clean -d -f
 }
 
+getd() {
+    mkdir -p "$1"
+    echo "$1"
+}
+
 get_tmpd() {
-    d="${TMPD:-$(__default TMPD)}"
-    mkdir -p "$d"
-    echo "$d"
+    d="${WORKD:-$(__default WORKD)}"
+    getd "$d"
 }
 
 get_tmpfile() {
