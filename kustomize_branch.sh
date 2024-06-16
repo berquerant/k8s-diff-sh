@@ -39,8 +39,10 @@ kustomize_sorted "$target" | yq_cmd "$query_right" > "$right_kustomized"
 left_name="[${left}] ${left_sha} ${target} ${query_left}"
 right_name="[${right}] ${right_sha} ${target} ${query_right}"
 
-diff_cmd "$left_kustomized" "$right_kustomized" |\
-    sed_cmd -e "s|${left_kustomized}|${left_name}|" \
-            -e "s|${right_kustomized}|${right_name}|"
+diff_sed "$left_kustomized" "$right_kustomized" \
+         -e "s|${left_kustomized}|${left_name}|" \
+         -e "s|${right_kustomized}|${right_name}|"
+ret=$?
 
 git_cmd switch "$original_branch"
+exit $ret

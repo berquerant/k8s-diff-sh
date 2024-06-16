@@ -47,9 +47,11 @@ helm_build "$target" --generate-name $right_opt | yq_cmd "$query_right" > "$righ
 left_name="[${left}] ${left_sha} ${target} ${query_left}"
 right_name="[${right}] ${right_sha} ${target} ${query_right}"
 
-diff_cmd "$left_result" "$right_result" |\
-    sed_cmd -e "s|${left_result}|${left_name}|" \
-            -e "s|${right_result}|${right_name}|"
+diff_sed "$left_result" "$right_result" \
+         -e "s|${left_result}|${left_name}|" \
+         -e "s|${right_result}|${right_name}|"
+ret=$?
 
 git_remove_untracked
 git_cmd switch "$original_branch"
+exit $ret

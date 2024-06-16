@@ -52,6 +52,6 @@ fi
 
 left_name="${left} ${query_left}"
 right_name="${right} ${query_right}"
-diff_cmd "$left_result" "$right_result" |\
-    sed_cmd -e "s|${left_result}|${left_name}|" \
-            -e "s|${right_result}|${right_name}|"
+diff_sed "$left_result" "$right_result" \
+         -e "s|${left_result}|${left_name}|" \
+         -e "s|${right_result}|${right_name}|"

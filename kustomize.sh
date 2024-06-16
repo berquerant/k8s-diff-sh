@@ -28,6 +28,6 @@ kustomize_sorted "$left" | yq_cmd "$query_left" > "$left_kustomized"
 kustomize_sorted "$right" | yq_cmd "$query_right" > "$right_kustomized"
 left_name="${left} ${query_left}"
 right_name="${right} ${query_right}"
-diff_cmd "$left_kustomized" "$right_kustomized" |\
-    sed_cmd -e "s|${left_kustomized}|${left_name}|" \
-            -e "s|${right_kustomized}|${right_name}|"
+diff_sed "$left_kustomized" "$right_kustomized" \
+         -e "s|${left_kustomized}|${left_name}|" \
+         -e "s|${right_kustomized}|${right_name}|"
