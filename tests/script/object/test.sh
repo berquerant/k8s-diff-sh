@@ -11,14 +11,27 @@ mkdir -p "$gotd"
 
 test_object_sh_diff() {
     ./object.sh "$left" "$right" > "${gotd}/got"
+    r=$?
+    [ $r -eq 0 ] && return 1
     diff -u "${thisd}/golden.diff" "${gotd}/got"
 }
 
 test_object_sh_diff_id() {
     DIFF_ID=1 ./object.sh "$left" "$right" > "${gotd}/got"
+    r=$?
+    [ $r -eq 0 ] && return 1
     diff -u "${thisd}/golden.id.diff" "${gotd}/got"
 }
 
+test_object_sh_no_diff() {
+    ./object.sh "$left" "$left"
+}
+
+test_object_sh_no_diff_id() {
+    DIFF_ID=1 ./object.sh "$left" "$left"
+}
 
 test_run_multi "test_object_sh_diff" \
-               "test_object_sh_diff_id"
+               "test_object_sh_diff_id" \
+               "test_object_sh_no_diff" \
+               "test_object_sh_no_diff_id"

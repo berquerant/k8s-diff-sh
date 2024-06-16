@@ -80,30 +80,29 @@ diff_object_by_id() {
 
     left_name="${left} ${id}"
     right_name="${right} ${id}"
-    set +e
+
     ret=0
-    __diff "$lfile" "$rfile" |\
-        sed_cmd -e "s|${lfile}|${left_name}|" \
-                -e "s|${rfile}|${right_name}|"
+    diff_sed "$lfile" "$rfile" \
+             -e "s|${lfile}|${left_name}|" \
+             -e "s|${rfile}|${right_name}|"
     ret=$?
-    set -e
     return $ret
 }
 
 # $1 : left
 # $2 : right
 diff_object() {
-    id_list="$(get_tmpfile)"
-    uniq_id_all > "$id_list"
-    ret=0
-    while read id ; do
+    diff_object_res="$(get_tmpfile)"
+    echo 0 > "$diff_object_res"
+    set +e
+    uniq_id_all | while read id ; do
         diff_object_by_id "$1" "$2" "$id"
         r=$?
-        if [ $r -gt 0 ] ; then
-            ret=$r
+        if [ $r -ne 0 ] ; then
+            echo "$r" > "$diff_object_res"
         fi
-    done < "$id_list"
-    return $ret
+    done
+    return "$(cat $diff_object_res)"
 }
 
 # $1 : left
@@ -115,19 +114,29 @@ diff_id() {
     uniq_id "$(rightd)" > "$rfile"
     left_name="$1"
     right_name="$2"
-    __diff "$lfile" "$rfile" |\
-        sed_cmd -e "s|${lfile}|${left_name}|" \
-                -e "s|${rfile}|${right_name}|"
+    diff_sed "$lfile" "$rfile" \
+             -e "s|${lfile}|${left_name}|" \
+             -e "s|${rfile}|${right_name}|"
+}
+
+# override diff_cmd in common.sh
+diff_cmd() {
+    __diff "$@"
 }
 
 __diff() {
-    diff -U "${CONTEXT:-3}" "$@" | awk -v left=$1 -v right=$2 '{
+    __diff_res="$(get_tmpfile)"
+    diff -U "${CONTEXT:-3}" "$1" "$2" > "$__diff_res"
+    __diff_ret="$?"
+
+    awk -v left="$1" -v right="$2" '{
   if (($1 == "---" || $1 == "+++") && ($2 == left || $2 == right)) {
     print $1, $2
   } else {
     print
   }
-}'
+}' "$__diff_res"
+    return $__diff_ret
 }
 
 
@@ -142,6 +151,8 @@ ${name} left.yml right.yml
 DIFF_ID=1 ${name} left.yml right.yml # object id diff only
 DIFF_ID=1 ${name} default right.yml # dump object ids of right.yml
 CONTEXT=5 ${name} left.yml right.yml # diff context lines
+
+Exit status is 0 if inputs are the same.
 EOS
     exit 1
 fi

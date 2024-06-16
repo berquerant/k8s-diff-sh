@@ -139,3 +139,17 @@ get_tmpd() {
 get_tmpfile() {
     mktemp -p "$(get_tmpd)"
 }
+
+# sed result of diff, keeping diff exit code
+#
+# $1: left
+# $2: right
+# $@: sed args
+diff_sed() {
+    __diff_sed_result="$(get_tmpfile)"
+    diff_cmd "$1" "$2" > "$__diff_sed_result"
+    __diff_sed_ret=$?
+    shift 2
+    sed "$@" < "$__diff_sed_result"
+    return $__diff_sed_ret
+}
