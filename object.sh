@@ -34,8 +34,12 @@ divide_manifests() {
         if [ -z "$(cat $file)" ] ; then
             break
         fi
+        set +e
         id="$(cat $file | manifest2id)"
-        echo "${id} ${file}" >> "$(index_file $rootd)"
+        set -e
+        if [ -n "$id" ] ; then
+            echo "${id} ${file}" >> "$(index_file $rootd)"
+        fi
         index=$((index + 1))
     done
 }
