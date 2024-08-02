@@ -4,7 +4,7 @@ Diff tools for Kubernetes.
 
 ## helm.sh
 
-```
+``` shell
 ❯ ./helm.sh
 helm template and diff
 helm.sh CHART LEFT_VALUES RIGHT_VALUES [QUERY_LEFT] [QUERY_RIGHT]
@@ -18,7 +18,7 @@ HELM_OPT='--version 3.54.2' HELM_OPT_RIGHT='--version 3.65.0' helm.sh datadog/da
 
 ## helm_branch.sh
 
-```
+``` shell
 ❯ ./helm_branch.sh
 helm build and diff between branches
 helm_branch.sh DIR LEFT_BRANCH RIGHT_BRANCH [QUERY_LEFT] [QUERY_RIGHT]
@@ -31,7 +31,7 @@ HELM_OPT_RIGHT='--values path/to/values.yaml' helm_branch.sh path/to/chart/dir m
 
 ## kustomize.sh
 
-```
+``` shell
 ❯ ./kustomize.sh
 kustomize build and diff
 kustomize.sh LEFT_DIR RIGHT_DIR [QUERY_LEFT] [QUERY_RIGHT]
@@ -42,7 +42,7 @@ kustomize.sh overlays/env1 overlays/env2 'select(.metadata.name=="xxx")'
 
 ## kustomize_branch.sh
 
-```
+``` shell
 ❯ ./kustomize_branch.sh
 kustomize build and diff between branches
 kustomize_branch.sh DIR LEFT_BRANCH RIGHT_BRANCH [QUERY_LEFT] [QUERY_RIGHT]
@@ -53,7 +53,7 @@ kustomize_branch.sh overlays/env master new 'select(.metadata.name=="xxx")'
 
 ## object.sh
 
-```
+``` shell
 ❯ ./object.sh
 diff by object
 object.sh LEFT RIGHT
@@ -65,4 +65,27 @@ DIFF_ID=1 object.sh default right.yml # dump object ids of right.yml
 CONTEXT=5 object.sh left.yml right.yml # diff context lines
 
 Exit status is 0 if inputs are the same.
+```
+
+## diff.sh
+
+``` shell
+❯ ./diff.sh
+build and diff
+diff.sh COMMON_COMMAND LEFT_ARGS RIGHT_ARGS
+
+e.g.
+diff.sh 'kubectl kustomize' 'overlays/left' 'overlays/right'
+diff.sh 'helm template datadog/datadog --version 3.68.0' '' '--version 3.69.3 --set datadog.logLevel=debug'
+```
+
+## branch.sh
+
+``` shell
+❯ ./branch.sh
+build and diff between branches
+branch.sh LEFT_BRANCH RIGHT_BRANCH COMMON_COMMAND LEFT_ARGS RIGHT_ARGS
+
+e.g.
+branch.sh master new 'kubectl kustomize' 'overlays/env' 'overlays/env'
 ```
