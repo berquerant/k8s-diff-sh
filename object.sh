@@ -106,21 +106,6 @@ diff_object() {
     return "$(cat $diff_object_res)"
 }
 
-# $1 : left
-# $2 : right
-diff_id() {
-    lfile="$(get_tmpfile)"
-    rfile="$(get_tmpfile)"
-    uniq_id "$(leftd)" > "$lfile"
-    uniq_id "$(rightd)" > "$rfile"
-    left_name="$1"
-    right_name="$2"
-    set +e
-    diff_sed "$lfile" "$rfile" \
-             -e "s|${lfile}|${left_name}|" \
-             -e "s|${rfile}|${right_name}|"
-}
-
 # override diff_cmd in common.sh
 diff_cmd() {
     __diff "$@"
@@ -150,8 +135,6 @@ ${name} LEFT RIGHT
 
 e.g.
 ${name} left.yml right.yml
-DIFF_ID=1 ${name} left.yml right.yml # object id diff only
-DIFF_ID=1 ${name} default right.yml # dump object ids of right.yml
 CONTEXT=5 ${name} left.yml right.yml # diff context lines
 
 Exit status is 0 if inputs are the same.
@@ -161,12 +144,6 @@ fi
 
 left="$1"
 right="$2"
-objid_only="$DIFF_ID"
 
 prepare_manifests "$left" "$right"
-
-if [ -n "$objid_only" ] ; then
-    diff_id "$left" "$right"
-else
-    diff_object "$left" "$right"
-fi
+diff_object "$left" "$right"
