@@ -153,3 +153,7 @@ diff_sed() {
     sed "$@" < "$__diff_sed_result"
     return $__diff_sed_ret
 }
+
+manifest2id() {
+    yq_cmd '(.apiVersion)+">"+(.kind)+">"+(.metadata.namespace // "")+">"+(.metadata.name)' -r | grep -v '^-'
+}

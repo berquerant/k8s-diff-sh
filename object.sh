@@ -18,10 +18,6 @@ index_file() {
     echo "$1/index"
 }
 
-manifest2id() {
-    yq_cmd '(.apiVersion)+">"+(.kind)+">"+(.metadata.namespace // "")+">"+(.metadata.name)' -r | grep -v '^-'
-}
-
 # $1 : manifest
 # $2 : rootd
 divide_manifests() {
