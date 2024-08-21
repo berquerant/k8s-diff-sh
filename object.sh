@@ -28,6 +28,7 @@ divide_manifests() {
     manifest="$1"
     rootd="$2"
     index=0
+    touch "$(index_file $rootd)"
     while true ; do
         file="$(documentd $rootd)/${index}"
         yq_cmd "select(documentIndex == ${index})" "$manifest" | sort_yaml > "$file"
@@ -118,6 +119,7 @@ diff_id() {
     uniq_id "$(rightd)" > "$rfile"
     left_name="$1"
     right_name="$2"
+    set +e
     diff_sed "$lfile" "$rfile" \
              -e "s|${lfile}|${left_name}|" \
              -e "s|${rfile}|${right_name}|"
