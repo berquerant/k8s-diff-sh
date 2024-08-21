@@ -89,3 +89,21 @@ branch.sh LEFT_BRANCH RIGHT_BRANCH COMMON_COMMAND LEFT_ARGS RIGHT_ARGS
 e.g.
 branch.sh master new 'kubectl kustomize' 'overlays/env' 'overlays/env'
 ```
+
+## id.sh
+
+``` shell
+❯ ./id.sh
+extract object id
+id.sh some.yml
+
+extract object id from stdin
+id.sh -
+
+diff object ids
+id.sh left.yml right.yml
+
+CONTEXT=5 id.sh left.yml right.yml
+
+Exit status is 0 if inputs are the same.
+```
