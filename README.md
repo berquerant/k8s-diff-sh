@@ -14,6 +14,7 @@ helm.sh datadog/datadog left_values.yml right_values.yml
 helm.sh datadog/datadog default right_values.yml
 HELM_OPT='--version 3.54.2' helm.sh datadog/datadog left_values.yml right_values.yml
 HELM_OPT='--version 3.54.2' HELM_OPT_RIGHT='--version 3.65.0' helm.sh datadog/datadog default default
+helm.sh datadog/datadog default right_values1.yml,right_values2.yml
 ```
 
 ## helm_branch.sh

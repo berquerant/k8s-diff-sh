@@ -14,6 +14,7 @@ ${name} datadog/datadog left_values.yml right_values.yml
 ${name} datadog/datadog default right_values.yml
 HELM_OPT='--version 3.54.2' ${name} datadog/datadog left_values.yml right_values.yml
 HELM_OPT='--version 3.54.2' HELM_OPT_RIGHT='--version 3.65.0' ${name} datadog/datadog default default
+${name} datadog/datadog default right_values1.yml,right_values2.yml
 
 EOS
     __usage
@@ -40,8 +41,8 @@ right_result="$(get_tmpfile)"
 left_opt="$HELM_OPT"
 right_opt="${HELM_OPT_RIGHT:-$left_opt}"
 
-helm_sorted "$target" --values "$left" --generate-name $left_opt | yq_cmd "$query_left" > "$left_result"
-helm_sorted "$target" --values "$right" --generate-name $right_opt | yq_cmd "$query_right" > "$right_result"
+helm_sorted "$target" --values $left --generate-name $left_opt | yq_cmd "$query_left" > "$left_result"
+helm_sorted "$target" --values $right --generate-name $right_opt | yq_cmd "$query_right" > "$right_result"
 
 if [ -n "$left_default" ] ; then
     left="default"
