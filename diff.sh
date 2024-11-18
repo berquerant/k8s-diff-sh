@@ -1,6 +1,6 @@
 #!/bin/bash
 
-thisd="$(cd $(dirname $0); pwd)"
+thisd="$(cd "$(dirname "$0")" || exit; pwd)"
 . "${thisd}/common.sh"
 
 if [ -z "$1" ] ; then
@@ -25,7 +25,9 @@ right_args="$3"
 left_result="$(get_tmpfile)"
 right_result="$(get_tmpfile)"
 
+# shellcheck disable=SC2086
 $command $left_args | sort_yaml > "$left_result"
+# shellcheck disable=SC2086
 $command $right_args | sort_yaml > "$right_result"
 
 left_name="${command} ${left_args}"

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-thisd="$(cd $(dirname $0); pwd)"
+thisd="$(cd "$(dirname "$0")" || exit; pwd)"
 default_tmpd="$(mktemp -d)"
 
 __default() {
@@ -100,6 +100,7 @@ kustomize_opt() {
 }
 
 kustomize_sorted() {
+    # shellcheck disable=SC2046
     kubectl_cmd kustomize $(kustomize_opt) "$@" | sort_yaml
 }
 
@@ -108,9 +109,9 @@ helm_build_prepare() {
     helm_cmd dependency list --max-col-width 200 "$target" |\
         grep -v '^$' |\
         awk 'NR > 1 {print $1,$3}' |\
-        while read line ; do
-            name="$(echo $line | cut -d ' ' -f 1)"
-            repo="$(echo $line | cut -d ' ' -f 2)"
+        while read -r line ; do
+            name="$(echo "$line" | cut -d ' ' -f 1)"
+            repo="$(echo "$line" | cut -d ' ' -f 2)"
             helm_cmd repo add "$name" "$repo"
         done
     helm_cmd dependency build "$target"

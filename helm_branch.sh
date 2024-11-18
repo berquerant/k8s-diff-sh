@@ -1,6 +1,6 @@
 #!/bin/bash
 
-thisd="$(cd $(dirname $0); pwd)"
+thisd="$(cd "$(dirname "$0")" || exit; pwd)"
 . "${thisd}/common.sh"
 
 if [ -z "$1" ] ; then
@@ -37,11 +37,13 @@ right_opt="${HELM_OPT_RIGHT:-$left_opt}"
 git_remove_untracked
 git_cmd switch "$left"
 left_sha="$(git_cmd rev-parse --short HEAD)"
+# shellcheck disable=SC2086
 helm_build "$target" --generate-name $left_opt | yq_cmd "$query_left" > "$left_result"
 
 git_remove_untracked
 git_cmd switch "$right"
 right_sha="$(git_cmd rev-parse --short HEAD)"
+# shellcheck disable=SC2086
 helm_build "$target" --generate-name $right_opt | yq_cmd "$query_right" > "$right_result"
 
 left_name="[${left}] ${left_sha} ${target} ${query_left}"

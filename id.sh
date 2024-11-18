@@ -1,6 +1,6 @@
 #!/bin/bash
 
-thisd="$(cd $(dirname $0); pwd)"
+thisd="$(cd "$(dirname "$0")" || exit; pwd)"
 . "${thisd}/common.sh"
 
 if [ $# -lt 1 ] ; then

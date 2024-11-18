@@ -1,6 +1,6 @@
 #!/bin/bash
 
-thisd="$(cd $(dirname $0); pwd)"
+thisd="$(cd "$(dirname "$0")" || exit; pwd)"
 . "${thisd}/common.sh"
 
 if [ -z "$1" ] ; then
@@ -30,10 +30,12 @@ right_result="$(get_tmpfile)"
 
 git_cmd switch "$left_branch"
 left_sha="$(git_cmd rev-parse --short HEAD)"
+# shellcheck disable=SC2086
 $command $left_args | sort_yaml > "$left_result"
 
 git_cmd switch "$right_branch"
 right_sha="$(git_cmd rev-parse --short HEAD)"
+# shellcheck disable=SC2086
 $command $right_args | sort_yaml > "$right_result"
 
 left_name="[${left_branch}] ${left_sha} ${command} ${left_args}"

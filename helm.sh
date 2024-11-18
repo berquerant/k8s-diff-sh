@@ -1,6 +1,6 @@
 #!/bin/bash
 
-thisd="$(cd $(dirname $0); pwd)"
+thisd="$(cd "$(dirname "$0")" || exit ; pwd)"
 . "${thisd}/common.sh"
 
 if [ -z "$1" ] ; then
@@ -40,8 +40,9 @@ left_result="$(get_tmpfile)"
 right_result="$(get_tmpfile)"
 left_opt="$HELM_OPT"
 right_opt="${HELM_OPT_RIGHT:-$left_opt}"
-
+# shellcheck disable=SC2086
 helm_sorted "$target" --values $left --generate-name $left_opt | yq_cmd "$query_left" > "$left_result"
+# shellcheck disable=SC2086
 helm_sorted "$target" --values $right --generate-name $right_opt | yq_cmd "$query_right" > "$right_result"
 
 if [ -n "$left_default" ] ; then
