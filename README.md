@@ -2,6 +2,24 @@
 
 Diff tools for Kubernetes.
 
+## k8s_diff.sh
+
+``` shell
+❯ ./k8s_diff.sh
+k8s_diff.sh TARGET [ARGS...]
+
+Available TARGET:
+
+h, helm             : helm.sh
+hb, helm_branch     : helm_branch.sh
+k, kustomize        : kustomize.sh
+kb, kustomize_branch: kustomize_branch.sh
+o, object           : object.sh
+d, diff             : diff.sh
+b, branch           : branch.sh
+i, id               : id.sh
+```
+
 ## helm.sh
 
 ``` shell
