@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # shellcheck disable=SC2155
-readonly root="$(cd "$(dirname "$0")" || exit; pwd)"
+readonly root="$(cd "$(dirname "$0")" || exit 1; pwd)"
 readonly target="$1"
 shift
 
