@@ -18,6 +18,7 @@ o, object           : object.sh
 d, diff             : diff.sh
 b, branch           : branch.sh
 i, id               : id.sh
+s, sync             : sync.sh
 ```
 
 ## helm.sh
@@ -123,4 +124,18 @@ id.sh left.yml right.yml
 CONTEXT=5 id.sh left.yml right.yml
 
 Exit status is 0 if inputs are the same.
+```
+
+## sync.sh
+
+``` shell
+❯ ./sync.sh
+sync.sh OPERATION TARGET [KUBECTL_GET_OPTION...]
+
+sync.sh (save|s) TARGET [KUBECTL_GET_OPTION...]
+  Save the TARGET as 'before' file.
+
+sync.sh (diff|d) TARGET [KUBECTL_GET_OPTION...]
+  Save the TARGET as 'after' file and compare 'before' and 'after'.
+  Fallback to 'save' if 'before' file not exists.
 ```

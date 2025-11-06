@@ -13,6 +13,7 @@ __default() {
         KUBECTL) echo "kubectl" ;;
         KUSTOMIZE_OPT) echo "" ;;
         WORKD) echo "$default_tmpd" ;;
+        CACHED) echo "${XDG_CACHE_HOME:-$HOME}/.k8s-diff-sh/" ;;
         *) echo "UNKNWON__DEFAULT" ;;
     esac
 }
@@ -52,6 +53,10 @@ Common environment variables:
   WORKD
     Temporary directory for temporary files.
     default: $(__default WORKD)
+
+  CACHED
+    Temporary directory for caches.
+    default: $(__default CACHED)
 EOS
 }
 
@@ -139,6 +144,11 @@ get_tmpd() {
 
 get_tmpfile() {
     mktemp -p "$(get_tmpd)"
+}
+
+get_cached() {
+    d="${CACHED:-$(__default CACHED)}"
+    getd "$d"
 }
 
 # sed result of diff, keeping diff exit code

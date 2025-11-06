@@ -11,7 +11,7 @@ ${name} COMMON_COMMAND LEFT_ARGS RIGHT_ARGS
 
 e.g.
 ${name} 'kubectl kustomize' 'overlays/left' 'overlays/right'
-${name} 'helm template datadog/datadog --version 3.68.0' '' '--version 3.69.3 --set datadog.logLevel=debug'
+${name} 'helm template datadog/datadog' '--version 3.68.0' '--version 3.69.3 --set datadog.logLevel=debug'
 
 EOS
     __usage

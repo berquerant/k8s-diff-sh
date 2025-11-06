@@ -23,6 +23,8 @@ case "$target" in
         script="${root}/branch.sh" ;;
     "i" | "id")
         script="${root}/id.sh" ;;
+    "s" | "sync")
+        script="${root}/sync.sh" ;;
 esac
 
 if [ -z "$script" ] ; then
@@ -40,6 +42,7 @@ o, object           : object.sh
 d, diff             : diff.sh
 b, branch           : branch.sh
 i, id               : id.sh
+s, sync             : sync.sh
 EOS
     exit 1
 fi
