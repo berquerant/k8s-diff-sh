@@ -22,7 +22,7 @@ __save() {
     local __dest
     __dest="$(dest "$__prefix" "$__target")"
     kget "$__target" "$@" > "$__dest"
-    echo >&2 "Saved to "${__dest}
+    echo >&2 "Saved to ${__dest}"
 }
 
 save() {
